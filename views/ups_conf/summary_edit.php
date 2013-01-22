@@ -15,17 +15,17 @@ for ($score = 5; $score <= 60; $score+= 5) {
 }
 
 if ($form_type === 'edit') {
-	$read_only = FALSE;
-	$buttons = array (
-		form_submit_update('submit'),
-		anchor_cancel('/app/ups_server')
-	);
+    $read_only = FALSE;
+    $buttons = array (
+        form_submit_update('submit'),
+        anchor_cancel('/app/ups_server')
+    );
 } else {
-	$read_only = FALSE;
-	$ups_conf_maxstartdelay = 45;
+    $read_only = FALSE;
+    $ups_conf_maxstartdelay = 45;
     $buttons = array(
         anchor_add(''),
-		anchor_cancel('/app/ups_server')
+        anchor_cancel('/app/ups_server')
     );
 }
 

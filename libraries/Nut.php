@@ -31,7 +31,7 @@ class Nut extends Daemon
     //const PATH_DEFAULT = '/var/www/html';
     //const PATH_VIRTUAL = '/var/www/virtual';
     const FILE_CONFIG = '/etc/ups/nut.conf';
-	//const FILE_DEFAULT = 'default.nut.conf';
+    //const FILE_DEFAULT = 'default.nut.conf';
     //const FILE_PREFIX = 'default.';
 
     function __construct()
@@ -70,14 +70,14 @@ class Nut extends Daemon
                 $file->add_lines_after("MODE $server_mode\n", "/^[^#]/");
         }
     }
-	
-	function validate_server_mode($server_mode)
+    
+    function validate_server_mode($server_mode)
     {
         if (!preg_match("/^[A-Za-z0-9\.\-_]+$/", $server_mode))
             return lang('web_server_server_name_invalid');
     }
-	
-	function get_server_upsd()
+    
+    function get_server_upsd()
     {
        clearos_profile(__METHOD__, __LINE__);
 
@@ -91,8 +91,8 @@ class Nut extends Daemon
         }
         return $retval;
     }
-	
-	function set_server_upsd($server_upsd)
+    
+    function set_server_upsd($server_upsd)
     {
         clearos_profile(__METHOD__, __LINE__);
 
@@ -106,8 +106,8 @@ class Nut extends Daemon
                 $file->add_lines_after("UPSD_OPTIONS $server_upsd\n", "/^[^#]/");
         }
     }
-	
-	function get_server_upsmon()
+    
+    function get_server_upsmon()
     {
        clearos_profile(__METHOD__, __LINE__);
 
@@ -121,8 +121,8 @@ class Nut extends Daemon
         }
         return $retval;
     }
-	
-	function set_server_upsmon($server_upsmon)
+    
+    function set_server_upsmon($server_upsmon)
     {
         clearos_profile(__METHOD__, __LINE__);
 
@@ -136,8 +136,8 @@ class Nut extends Daemon
                 $file->add_lines_after("UPSMON_OPTIONS $server_upsmon\n", "/^[^#]/");
         }
     }
-	
-	function get_server_poweroff_wait()
+    
+    function get_server_poweroff_wait()
     {
        clearos_profile(__METHOD__, __LINE__);
 
@@ -152,7 +152,7 @@ class Nut extends Daemon
         return $retval;
     }
 
-	function set_server_poweroff_wait($server_poweroff_wait)
+    function set_server_poweroff_wait($server_poweroff_wait)
     {
         clearos_profile(__METHOD__, __LINE__);
 
@@ -166,101 +166,101 @@ class Nut extends Daemon
                 $file->add_lines_after("POWEROFF_WAIT $server_poweroff_wait\n", "/^[^#]/");
         }
     }
-	
-	function get_ups_list($item, $value)
-	{
-		$list[1]['name'] = 'ups1';
-		$list[1]['desc'] = 'Primary UPS';
-		$list[1]['driver'] = 'auto';
-		$list[1]['port'] = '3493';
-		$list[1]['sorder'] = 'null';
-		$list[1]['nolock'] = 'null';
-		$list[1]['ignorelb'] = 'null';
-		$list[1]['maxstartdelay'] = '10';
-		
-		$list[2]['name'] = 'ups2';
-		$list[2]['desc'] = 'Secondary UPS';
-		$list[2]['driver'] = 'auto';
-		$list[2]['port'] = '3493';
-		$list[2]['sorder'] = 'null';
-		$list[2]['nolock'] = 'null';
-		$list[2]['ignorelb'] = 'null';
-		$list[2]['maxstartdelay'] = '5';
-		
-		if (! $item) {
-			return $list;
-		} else {
-			return $list[$item][$value];
-		}
-	}
-	
-	function get_ups_commands_list($item, $value)
-	{
-		$list[1]['command'] = 'battery.charge.low';
-		$list[1]['default'] = '35';
-		$list[1]['override'] = '30';
-		$list[2]['command'] = 'battery.runtime.low';
-		$list[2]['default'] = '80';
-		$list[2]['override'] = '85';
-		$list[3]['command'] = 'input.voltage.nominal';
-		$list[3]['default'] = '230';
-		$list[3]['override'] = '240';
-		$list[4]['command'] = 'input.voltage.nominal';
-		$list[4]['default'] = '200';
-		$list[4]['override'] = '210';
-		
-		if (! $item) {
-			return $list;
-		} else {
-			return $list[$item][$value];
-		}
-	}
-	
-	function get_upsd_interfaces($item, $value)
-	{
-		$list[1]['validate'] = 'ipv4';
-		$list[1]['ip'] = '192.168.100.100';
-		$list[1]['port'] = '3876';
-		$list[2]['validate'] = 'ipv4';
-		$list[2]['ip'] = '192.168.100.171';
-		$list[2]['port'] = '3876';
-		$list[3]['validate'] = 'ipv6';
-		$list[3]['ip'] = '::1';
-		$list[3]['port'] = '3876';
-		
-		if (! $item) {
-			return $list;
-		} else {
-			return $list[$item][$value];
-		}
-	}
+    
+    function get_ups_list($item, $value)
+    {
+        $list[1]['name'] = 'ups1';
+        $list[1]['desc'] = 'Primary UPS';
+        $list[1]['driver'] = 'auto';
+        $list[1]['port'] = '3493';
+        $list[1]['sorder'] = 'null';
+        $list[1]['nolock'] = 'null';
+        $list[1]['ignorelb'] = 'null';
+        $list[1]['maxstartdelay'] = '10';
+        
+        $list[2]['name'] = 'ups2';
+        $list[2]['desc'] = 'Secondary UPS';
+        $list[2]['driver'] = 'auto';
+        $list[2]['port'] = '3493';
+        $list[2]['sorder'] = 'null';
+        $list[2]['nolock'] = 'null';
+        $list[2]['ignorelb'] = 'null';
+        $list[2]['maxstartdelay'] = '5';
+        
+        if (! $item) {
+            return $list;
+        } else {
+            return $list[$item][$value];
+        }
+    }
+    
+    function get_ups_commands_list($item, $value)
+    {
+        $list[1]['command'] = 'battery.charge.low';
+        $list[1]['default'] = '35';
+        $list[1]['override'] = '30';
+        $list[2]['command'] = 'battery.runtime.low';
+        $list[2]['default'] = '80';
+        $list[2]['override'] = '85';
+        $list[3]['command'] = 'input.voltage.nominal';
+        $list[3]['default'] = '230';
+        $list[3]['override'] = '240';
+        $list[4]['command'] = 'input.voltage.nominal';
+        $list[4]['default'] = '200';
+        $list[4]['override'] = '210';
+        
+        if (! $item) {
+            return $list;
+        } else {
+            return $list[$item][$value];
+        }
+    }
+    
+    function get_upsd_interfaces($item, $value)
+    {
+        $list[1]['validate'] = 'ipv4';
+        $list[1]['ip'] = '192.168.100.100';
+        $list[1]['port'] = '3876';
+        $list[2]['validate'] = 'ipv4';
+        $list[2]['ip'] = '192.168.100.171';
+        $list[2]['port'] = '3876';
+        $list[3]['validate'] = 'ipv6';
+        $list[3]['ip'] = '::1';
+        $list[3]['port'] = '3876';
+        
+        if (! $item) {
+            return $list;
+        } else {
+            return $list[$item][$value];
+        }
+    }
 
-	function get_users_list($item, $value)
-	{
-		$list[1]['name'] = 'user1';
-		$list[1]['pwd'] = 'password';
-		$list[1]['actions_set'] = '1';
-		$list[1]['actions_fsd'] = '1';
-		$list[1]['upsmon'] = 'master';
-		$list[2]['name'] = 'user2';
-		$list[2]['upsmon'] = 'slave';
-		$list[2]['pwd'] = 'password';
-		$list[2]['actions_set'] = '0';
-		$list[2]['actions_fsd'] = '0';
-		
-		if (! $item) {
-			return $list;
-		} else {
-			return $list[$item][$value];
-		}
-	}
-	
-	function get_user_commands_list()
-	{
-		$list[1]['command'] = 'test.panel.start';
-		$list[1]['chkd'] = 'TRUE';
-		$list[2]['command'] = 'test.panel.stop';
-		$list[2]['chkd'] = 'FALSE';
-		return $list;
-	}
+    function get_users_list($item, $value)
+    {
+        $list[1]['name'] = 'user1';
+        $list[1]['pwd'] = 'password';
+        $list[1]['actions_set'] = '1';
+        $list[1]['actions_fsd'] = '1';
+        $list[1]['upsmon'] = 'master';
+        $list[2]['name'] = 'user2';
+        $list[2]['upsmon'] = 'slave';
+        $list[2]['pwd'] = 'password';
+        $list[2]['actions_set'] = '0';
+        $list[2]['actions_fsd'] = '0';
+        
+        if (! $item) {
+            return $list;
+        } else {
+            return $list[$item][$value];
+        }
+    }
+    
+    function get_user_commands_list()
+    {
+        $list[1]['command'] = 'test.panel.start';
+        $list[1]['chkd'] = 'TRUE';
+        $list[2]['command'] = 'test.panel.stop';
+        $list[2]['chkd'] = 'FALSE';
+        return $list;
+    }
 }

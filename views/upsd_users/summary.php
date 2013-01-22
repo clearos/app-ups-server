@@ -16,13 +16,13 @@ $anchors = array(anchor_add('/app/ups_server/upsd_users/add'));
 
 foreach ($upsd_user_list as $id => $details) {
 
-	$detail_buttons = button_set(
-		array(
-			anchor_custom('/app/ups_server/upsd_users_commands/edit/' . $id, 'Commands'),
-			anchor_edit('/app/ups_server/upsd_users/edit/' . $id),
-			anchor_delete('/app/ups_server/upsd_users/delete/' . $id)
-		)
-	);
+    $detail_buttons = button_set(
+        array(
+            anchor_custom('/app/ups_server/upsd_users_commands/edit/' . $id, 'Commands'),
+            anchor_edit('/app/ups_server/upsd_users/edit/' . $id),
+            anchor_delete('/app/ups_server/upsd_users/delete/' . $id)
+        )
+    );
 
     $item['title'] = $details['name'];
     $item['action'] = '##' . $id;

@@ -4,21 +4,21 @@ $this->lang->load('base');
 $this->lang->load('ups_server');
 
 $upsd_conf_ip_validate_options = array(
-	'ipv4' => 'ipv4',
+    'ipv4' => 'ipv4',
     'ipv6' => 'ipv6',
 );
 
 if ($form_type === 'edit') {
-	$read_only = FALSE;
-	$buttons = array (
-		form_submit_update('submit'),
-		anchor_cancel('/app/ups_server')
-	);
+    $read_only = FALSE;
+    $buttons = array (
+        form_submit_update('submit'),
+        anchor_cancel('/app/ups_server')
+    );
 } else {
-	$read_only = FALSE;
+    $read_only = FALSE;
     $buttons = array(
         anchor_add(''),
-		anchor_cancel('/app/ups_server')
+        anchor_cancel('/app/ups_server')
     );
 }
 

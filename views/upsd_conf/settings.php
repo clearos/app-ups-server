@@ -14,16 +14,16 @@ for ($score = 5; $score <= 60; $score+= 5) {
 }
 
 if ($form_type === 'edit') {
-	$read_only = FALSE;
-	$buttons = array (
-		form_submit_update('submit'),
-		anchor_cancel('/app/ups_server/upsd_conf_settings')
-	);
+    $read_only = FALSE;
+    $buttons = array (
+        form_submit_update('submit'),
+        anchor_cancel('/app/ups_server/upsd_conf_settings')
+    );
 } else {
-	$read_only = TRUE;
+    $read_only = TRUE;
     $buttons = array(
         anchor_edit('/app/ups_server/upsd_conf_settings/edit'),
-		anchor_cancel('/app/ups_server')
+        anchor_cancel('/app/ups_server')
     );
 }
 

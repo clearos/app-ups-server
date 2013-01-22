@@ -17,11 +17,11 @@ $anchors = array(anchor_custom('/app/ups_server/upsd_conf_settings/', 'Configura
 foreach ($upsd_conf_interfaces as $id => $details) {
 
     $detail_buttons = button_set(
-		array(
-			anchor_edit('/app/ups_server/upsd_conf_summary_edit/edit/' . $id),
-			anchor_delete('/app/ups_server/upsd_conf_summary_edit/delete/' . $id)
-		)
-	);
+        array(
+            anchor_edit('/app/ups_server/upsd_conf_summary_edit/edit/' . $id),
+            anchor_delete('/app/ups_server/upsd_conf_summary_edit/delete/' . $id)
+        )
+    );
 
     $item['title'] = $details['ip'];
     $item['action'] = '##' . $id;

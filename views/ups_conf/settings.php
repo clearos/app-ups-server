@@ -4,16 +4,16 @@ $this->lang->load('base');
 $this->lang->load('ups_server');
 
 if ($form_type === 'edit') {
-	$read_only = FALSE;
-	$buttons = array (
-		form_submit_update('submit'),
-		anchor_cancel('/app/ups_server/ups_conf_settings')
-	);
+    $read_only = FALSE;
+    $buttons = array (
+        form_submit_update('submit'),
+        anchor_cancel('/app/ups_server/ups_conf_settings')
+    );
 } else {
-	$read_only = TRUE;
+    $read_only = TRUE;
     $buttons = array(
         anchor_edit('/app/ups_server/ups_conf_settings/edit'),
-		anchor_cancel('/app/ups_server')
+        anchor_cancel('/app/ups_server')
     );
 }
 

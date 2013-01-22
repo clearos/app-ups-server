@@ -9,11 +9,11 @@ $anchors = array(form_submit_update('submit'),anchor_cancel('/app/ups_server/'))
 
 foreach ($upsd_users_command_list as $id => $details) {
 
-	$detail_buttons = button_set(
-		array(
-			anchor_custom('/app/content_filter/policy/configure/' . $id, lang('base_configure')),
-		)
-	);
+    $detail_buttons = button_set(
+        array(
+            anchor_custom('/app/content_filter/policy/configure/' . $id, lang('base_configure')),
+        )
+    );
 
     $item['title'] = $details['command'];
     $item['action'] = '/app/content_filter/policy/configure/' . $id;

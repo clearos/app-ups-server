@@ -16,13 +16,13 @@ $anchors = array(anchor_custom('/app/ups_server/ups_conf_settings/', 'Global Dir
 
 foreach ($ups_conf_list as $id => $details) {
 
-	$detail_buttons = button_set(
-		array(
-			anchor_custom('/app/ups_server/ups_conf_commands_view/edit/' . $id, lang('base_configure')),
-			anchor_edit('/app/ups_server/ups_conf_summary_edit/edit/' . $id),
-			anchor_delete('/app/ups_server/ups_conf_summary_edit/delete/' . $id)
-		)
-	);
+    $detail_buttons = button_set(
+        array(
+            anchor_custom('/app/ups_server/ups_conf_commands_view/edit/' . $id, lang('base_configure')),
+            anchor_edit('/app/ups_server/ups_conf_summary_edit/edit/' . $id),
+            anchor_delete('/app/ups_server/ups_conf_summary_edit/delete/' . $id)
+        )
+    );
 
     $item['title'] = $details['name'];
     $item['action'] = '##' . $id;

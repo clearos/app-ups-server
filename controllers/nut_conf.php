@@ -3,7 +3,7 @@
  * UPS Server controller.
  *
  * @category   Apps
- * @package    Accounts
+ * @package    UPS_Server
  * @subpackage Controllers
  * @author     UWS <UWS@Shaw.ca>
  * @copyright  2011 ClearFoundation
