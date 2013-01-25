@@ -27,12 +27,7 @@ clearos_load_library('base/File_No_Match_Exception');
 
 class Nut extends Daemon
 {
-    //const PATH_CONFD  = '/etc/httpd/conf.d';
-    //const PATH_DEFAULT = '/var/www/html';
-    //const PATH_VIRTUAL = '/var/www/virtual';
-    const FILE_CONFIG = '/etc/ups/nut.conf';
-    //const FILE_DEFAULT = 'default.nut.conf';
-    //const FILE_PREFIX = 'default.';
+    const FILE_CONFIG = 'default.nut.conf';
 
     function __construct()
     {
@@ -46,7 +41,7 @@ class Nut extends Daemon
        clearos_profile(__METHOD__, __LINE__);
 
         try {
-            $file = new File(self::FILE_CONFIG);
+            $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_CONFIG);
             $retval = $file->lookup_value("/^MODE\s+/i");
         } catch (File_No_Match_Exception $e) {
             return '';
@@ -60,7 +55,7 @@ class Nut extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $file = new File(self::FILE_CONFIG);
+        $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_CONFIG);
         $match = $file->replace_lines("/^\s*MODE/i", "MODE $server_mode\n");
 
         if (! $match) {
@@ -82,7 +77,7 @@ class Nut extends Daemon
        clearos_profile(__METHOD__, __LINE__);
 
         try {
-            $file = new File(self::FILE_CONFIG);
+            $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_CONFIG);
             $retval = $file->lookup_value("/^UPSD_OPTIONS\s+/i");
         } catch (File_No_Match_Exception $e) {
             return '';
@@ -96,7 +91,7 @@ class Nut extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $file = new File(self::FILE_CONFIG);
+        $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_CONFIG);
         $match = $file->replace_lines("/^\s*UPSD_OPTIONS/i", "UPSD_OPTIONS $server_upsd\n");
 
         if (! $match) {
@@ -112,7 +107,7 @@ class Nut extends Daemon
        clearos_profile(__METHOD__, __LINE__);
 
         try {
-            $file = new File(self::FILE_CONFIG);
+            $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_CONFIG);
             $retval = $file->lookup_value("/^UPSMON_OPTIONS\s+/i");
         } catch (File_No_Match_Exception $e) {
             return '';
@@ -126,7 +121,7 @@ class Nut extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $file = new File(self::FILE_CONFIG);
+        $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_CONFIG);
         $match = $file->replace_lines("/^\s*UPSMON_OPTIONS/i", "UPSMON_OPTIONS $server_upsmon\n");
 
         if (! $match) {
@@ -142,7 +137,7 @@ class Nut extends Daemon
        clearos_profile(__METHOD__, __LINE__);
 
         try {
-            $file = new File(self::FILE_CONFIG);
+            $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_CONFIG);
             $retval = $file->lookup_value("/^POWEROFF_WAIT\s+/i");
         } catch (File_No_Match_Exception $e) {
             return '';
@@ -156,7 +151,7 @@ class Nut extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $file = new File(self::FILE_CONFIG);
+        $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_CONFIG);
         $match = $file->replace_lines("/^\s*POWEROFF_WAIT/i", "POWEROFF_WAIT $server_poweroff_wait\n");
 
         if (! $match) {
@@ -196,18 +191,36 @@ class Nut extends Daemon
     
     function get_ups_commands_list($item, $value)
     {
-        $list[1]['command'] = 'battery.charge.low';
-        $list[1]['default'] = '35';
-        $list[1]['override'] = '30';
-        $list[2]['command'] = 'battery.runtime.low';
-        $list[2]['default'] = '80';
-        $list[2]['override'] = '85';
-        $list[3]['command'] = 'input.voltage.nominal';
-        $list[3]['default'] = '230';
-        $list[3]['override'] = '240';
-        $list[4]['command'] = 'input.voltage.nominal';
-        $list[4]['default'] = '200';
-        $list[4]['override'] = '210';
+        $list[1]['command'] = 'battery.charge';
+        $list[1]['default'] = '100';
+        $list[1]['override'] = '100';
+        $list[2]['command'] = 'battery.charge.low';
+        $list[2]['default'] = '10';
+        $list[2]['override'] = '30';
+        $list[3]['command'] = 'battery.charge.warning';
+        $list[3]['default'] = '50';
+        $list[3]['override'] = '50';
+        $list[4]['command'] = 'battery.runtime.low';
+        $list[4]['default'] = '80';
+        $list[4]['override'] = '85';
+        $list[5]['command'] = 'input.voltage.nominal';
+        $list[5]['default'] = '230';
+        $list[5]['override'] = '240';
+        $list[6]['command'] = 'input.voltage.nominal';
+        $list[6]['default'] = '200';
+        $list[6]['override'] = '210';
+        $list[7]['command'] = 'battery.date';
+        $list[7]['default'] = 'yyyy/mm/dd';
+        $list[7]['override'] = '2011/01/15';
+        $list[8]['command'] = 'battery.mfr.date';
+        $list[8]['default'] = 'yyyy/mm/dd';
+        $list[8]['override'] = '2011/01/15';
+        $list[9]['command'] = 'battery.runtime';
+        $list[9]['default'] = '2000';
+        $list[9]['override'] = '3000';
+        $list[10]['command'] = 'battery.type';
+        $list[10]['default'] = 'PbAc';
+        $list[10]['override'] = 'PbAc';
         
         if (! $item) {
             return $list;
