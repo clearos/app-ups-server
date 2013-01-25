@@ -3,6 +3,7 @@
 echo form_open('ups_server/upsd_conf_summary_view/');
 echo form_header('TESTING, NOTES.');
 echo fieldset_header('TAG: UPSD.CONF VIEW<br>TAG: CONTROLLER = UPSD_CONF_SUMMARY_VIEW.PHP<br>TAG: VIEW = "/UPSD_CONF/SUMMARY_VIEW.PHP"');
+echo field_info('');
 echo form_footer();
 echo form_close();
 //REMOVE AFTER TESTING

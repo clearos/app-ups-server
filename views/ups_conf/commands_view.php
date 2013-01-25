@@ -6,6 +6,7 @@ echo infobox_highlight("Vote", "1.) Displaying only what the UPS can support, re
 echo form_open('ups_server/ups_conf_commnads/view');
 echo form_header('TESTING, NOTES.');
 echo fieldset_header('TAG: UPS.CONF COMMANDS VIEW<br>TAG: CONTROLLER = UPS_CONF_COMMANDS_VIEW.PHP<br>TAG: VIEW = "/UPS_CONF/COMMANDS_VIEW.PHP"');
+echo field_info('');
 echo form_footer();
 echo form_close();
 //REMOVE AFTER TESTING

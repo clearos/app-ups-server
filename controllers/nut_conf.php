@@ -92,7 +92,7 @@ class Nut_Conf extends ClearOS_Controller
                 $this->nut->set_server_upsmon($this->input->post('server_upsmon'));
                 $this->nut->set_server_poweroff_wait($this->input->post('server_poweroff_wait'));
                 $this->page->set_status_updated();
-                redirect('/ups_server/nut_conf/summary');
+                //redirect('/ups_server/nut_conf/summary');
             } catch (Exception $e) {
                 $this->page->view_exception($e);
                 return;

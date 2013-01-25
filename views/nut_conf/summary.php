@@ -29,11 +29,11 @@ if ($form_type === 'edit') {
 } else {
     $read_only = TRUE;
     $buttons = array(
-        anchor_edit('/app/ups_server/ups_server_conf/edit')
+        anchor_edit('/app/ups_server/nut_conf/edit')
     );
 }
 
-echo form_open('ups_server/ups_server_conf/summary/edit');
+echo form_open('ups_server/nut_conf/edit');
 echo form_header(lang('base_settings'));
 //Remove after testing
 echo fieldset_header('TAG: NUT.CONF<br>TAG: CONTROLLER = NUT_CONF.PHP<br>TAG: VIEW = "/NUT_CONF/SUMMARY.PHP"');
