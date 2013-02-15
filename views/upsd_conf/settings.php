@@ -1,5 +1,12 @@
 <?php
-
+//REMOVE AFTER TESTING
+echo form_open('ups_server/upsd_conf_settings/');
+echo form_header('TESTING, NOTES.');
+echo fieldset_header('TAG: UPSD.CONF CONFIGURATION DIRECTIVES<br>TAG: CONTROLLER = UPSD_CONF_SETTINGS.PHP<br>TAG: VIEW = "/UPSD_CONF/SETTINGS.PHP"');
+echo field_info('');
+echo form_footer();
+echo form_close();
+//REMOVE AFTER TESTING
 $this->lang->load('base');
 $this->lang->load('ups_server');
 
@@ -29,10 +36,6 @@ if ($form_type === 'edit') {
 
 echo form_open('ups_server/upsd_conf_settings/edit');
 echo form_header(lang('base_settings'));
-//REMOVE AFTER TESTING
-echo fieldset_header('TAG: UPS.CONF CONFIGURATION DIRECTIVES<br>TAG: CONTROLLER = UPSD_CONF_SETTINGS.PHP<br>TAG: VIEW = "/UPSD_CONF/SETTINGS.PHP"');
-//REMOVE AFTER TESTING
-
 echo field_dropdown('upsd_conf_maxage', $upsd_conf_maxage_options, $upsd_conf_maxage, 'MAXAGE', $read_only);
 echo field_input('upsd_conf_statepath', $upsd_conf_statepath, 'STATE PATH', $read_only);
 echo field_input('upsd_conf_maxconn', $upsd_conf_maxconn, 'MAX CONNECTIONS', $read_only);
@@ -42,3 +45,5 @@ echo field_button_set($buttons);
 
 echo form_footer();
 echo form_close();
+
+

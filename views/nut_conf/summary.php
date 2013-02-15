@@ -1,5 +1,12 @@
 <?php
-
+//REMOVE AFTER TESTING
+echo form_open('ups_server/nut_conf/');
+echo form_header('TESTING, NOTES.');
+echo fieldset_header('TAG: NUT.CONF<br>TAG: CONTROLLER = NUT_CONF.PHP<br>TAG: VIEW = "/NUT_CONF/SUMMARY.PHP"<br>TAG:COMPLETION = 100% FOR THIS VERSION.');
+echo field_info('');
+echo form_footer();
+echo form_close();
+//REMOVE AFTER TESTING
 $this->lang->load('base');
 $this->lang->load('ups_server');
 
@@ -35,9 +42,6 @@ if ($form_type === 'edit') {
 
 echo form_open('ups_server/nut_conf/edit');
 echo form_header(lang('base_settings'));
-//Remove after testing
-echo fieldset_header('TAG: NUT.CONF<br>TAG: CONTROLLER = NUT_CONF.PHP<br>TAG: VIEW = "/NUT_CONF/SUMMARY.PHP"');
-//Remove after testing
 echo field_dropdown('server_mode', $server_mode_options, $server_mode, lang('ups_server_server_mode'), $read_only);
 
 if ($show_options) {

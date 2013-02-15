@@ -29,8 +29,8 @@ class ups_conf_commands_view extends ClearOS_Controller
         
         try {
             $data['form_type'] = $form_type;
-            // EDIT SHOULD OUTPUT AN ITEM TO RETURN BACK... ONLY RETURNING FULL LIST... NEED A FUNCTION TO RETURN UPS COMMANDS.
-            $data['ups_commands_list'] = $this->nut->get_ups_commands_list();
+            $data['ups'] = $item;
+            $data['ups_commands_list'] = $this->nut->get_ups_commands_list($item);
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;

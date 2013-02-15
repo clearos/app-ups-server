@@ -7,9 +7,9 @@ class ups_conf_commands_edit extends ClearOS_Controller
     {
         $this->_form('view');
     }
-    function edit($item)
+    function edit($item, $ups)
     {
-        $this->_form('edit', $item);
+        $this->_form('edit', $item, $ups);
     }
     function add()
     {
@@ -18,7 +18,7 @@ class ups_conf_commands_edit extends ClearOS_Controller
     function delete()
     {
     }
-    function _form($form_type, $item)
+    function _form($form_type, $item, $ups)
     {
         $this->lang->load('ups_server');
         $this->load->library('ups_server/nut');
@@ -26,6 +26,7 @@ class ups_conf_commands_edit extends ClearOS_Controller
         if ($this->input->post('submit') && ($form_ok === TRUE)) {
 
             try {
+                
                 //TEST REDIRECT
                 redirect('/ups_server/nut_conf/summary');
             } catch (Exception $e) {
@@ -36,9 +37,11 @@ class ups_conf_commands_edit extends ClearOS_Controller
         
         try {
             $data['form_type'] = $form_type;
-            $data['ups_commands_command'] = $this->nut->get_ups_commands_list($item, 'command');
-            $data['ups_commands_default'] = $this->nut->get_ups_commands_list($item, 'default');
-            $data['ups_commands_override'] = $this->nut->get_ups_commands_list($item, 'override');
+            $data['ups'] = $ups;
+            $data['ups_commands_command'] = $this->nut->get_ups_commands_list($ups, $item, 'command');
+            $data['ups_commands_default'] = $this->nut->get_ups_commands_list($ups, $item, 'default');
+            $data['ups_commands_override'] = $this->nut->get_ups_commands_list($ups, $item, 'override');
+            $data['ups_commands_supported'] = $this->nut->get_ups_commands_list($ups, $item, 'supported');
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;

@@ -1,6 +1,6 @@
 <?php
 //REMOVE AFTER TESTING
-echo form_open('ups_server/ups_conf_commnads_view/');
+echo form_open('ups_server/ups_conf_summary_view/');
 echo form_header('TESTING, NOTES.');
 echo fieldset_header('TAG: UPS.CONF VIEW<br>TAG: CONTROLLER = UPS_CONF_SUMMARY_VIEW.PHP<br>TAG: VIEW = "/UPS_CONF/SUMMARY_VIEW.PHP"');
 echo field_info('');

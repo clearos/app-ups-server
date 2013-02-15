@@ -1,5 +1,12 @@
 <?php
-//RENAME CONTROLLER AND VIEW.
+//REMOVE AFTER TESTING
+echo form_open('ups_server/ups_conf_summary_edit/');
+echo form_header('TESTING, NOTES.');
+echo fieldset_header('TAG: UPS.CONF UPS FIELDS<br>TAG: CONTROLLER = UPS_CONF_SUMMARY_EDIT.PHP<br>TAG: VIEW = "/UPS_CONF/SUMMARY_EDIT.PHP"');
+echo field_info('');
+echo form_footer();
+echo form_close();
+//REMOVE AFTER TESTING
 
 $this->lang->load('base');
 $this->lang->load('ups_server');
@@ -31,9 +38,6 @@ if ($form_type === 'edit') {
 
 echo form_open('ups_server/ups_conf_summary_edit/');
 echo form_header(lang('base_settings'));
-//REMOVE AFTER TESTING
-echo fieldset_header('TAG: UPS.CONF UPS FIELDS<br>TAG: CONTROLLER = UPS_CONF_SUMMARY_EDIT.PHP<br>TAG: VIEW = "/UPS_CONF/SUMMARY_EDIT.PHP"');
-//REMOVE AFTER TESTING
 echo field_input('ups_conf_name', $ups_conf_name, 'NAME', $read_only);
 echo field_input('ups_conf_driver', $ups_conf_driver, 'DRIVER', $read_only);
 echo field_input('ups_conf_port', $ups_conf_port, 'PORT', $read_only);

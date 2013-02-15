@@ -37,6 +37,7 @@ echo list_table(
 echo form_open('ups_server/upsd_users_commands/');
 echo form_header('TESTING, NOTES.');
 echo fieldset_header('TAG: UPSD_USERS.CONF COMMANDS<br>TAG: CONTROLLER = UPSD_USERS_COMMANDS.PHP<br>TAG: VIEW = "/UPSD_USERS/COMMANDS_VIEW.PHP"');
+echo field_info('');
 echo form_footer();
 echo form_close();
 //REMOVE AFTER TESTING
