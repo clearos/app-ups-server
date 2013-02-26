@@ -81,31 +81,31 @@ class Nut_Conf extends ClearOS_Controller
         $this->lang->load('ups_server');
         $this->load->library('ups_server/nut');
         
-        $this->form_validation->set_policy('server_mode', 'ups_server/nut', 'validate_param', TRUE);
-        $form_ok = $this->form_validation->run();
+        //FIX: Form validation
+        //$this->form_validation->set_policy('server_mode', 'ups_server/nut', 'validate_param', TRUE);
+        //$form_ok = $this->form_validation->run();
+        $form_ok = TRUE;
         
         if ($this->input->post('submit') && ($form_ok === TRUE)) {
-
             try {
-                $this->nut->set_nut_conf($this->input->post('server_mode'), 'MODE', FALSE);
-                $this->nut->set_nut_conf($this->input->post('server_upsd'), 'UPSD_OPTIONS', TRUE);
-                $this->nut->set_nut_conf($this->input->post('server_upsmon'), 'UPSMON_OPTIONS', TRUE);
-                $this->nut->set_nut_conf($this->input->post('server_poweroff_wait'), 'POWEROFF_WAIT', FALSE);
+                $this->nut->set_nut_conf($this->input->post('mode'), 'MODE', FALSE);
+                $this->nut->set_nut_conf($this->input->post('upsd'), 'UPSD_OPTIONS', TRUE);
+                $this->nut->set_nut_conf($this->input->post('upsmon'), 'UPSMON_OPTIONS', TRUE);
+                $this->nut->set_nut_conf($this->input->post('poweroff_wait'), 'POWEROFF_WAIT', FALSE);
                 $this->page->set_status_updated();
             } catch (Exception $e) {
                 $this->page->view_exception($e);
                 return;
             }
         }       
-        
         try {
             $data['form_type'] = $form_type;
-            $data['server_mode'] = $this->nut->get_nut_conf('MODE', FALSE);
-            //Hide options based on mode.
+            $data['mode'] = $this->nut->get_nut_conf('MODE', FALSE);
+            //FIX: AJAX hide options based on mode.
             $data['show_options'] = TRUE;
-            $data['server_upsd'] = $this->nut->get_nut_conf('UPSD_OPTIONS', TRUE);
-            $data['server_upsmon'] = $this->nut->get_nut_conf('UPSMON_OPTIONS', TRUE);
-            $data['server_poweroff_wait'] = $this->nut->get_nut_conf('POWEROFF_WAIT', FALSE);
+            $data['upsd'] = $this->nut->get_nut_conf('UPSD_OPTIONS', TRUE);
+            $data['upsmon'] = $this->nut->get_nut_conf('UPSMON_OPTIONS', TRUE);
+            $data['poweroff_wait'] = $this->nut->get_nut_conf('POWEROFF_WAIT', FALSE);
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;

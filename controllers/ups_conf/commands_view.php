@@ -1,17 +1,21 @@
 <?php
 use \Exception as Exception;
 
-class ups_conf_commands_view extends ClearOS_Controller
+class commands_view extends ClearOS_Controller
 {
     function index()
     {
         $this->_form('view');
     }
-    function edit($item)
+    function view($ups)
     {
-        $this->_form('edit', $item);
+        $this->_form('view', $ups);
     }
-    function _form($form_type, $item)
+    function edit($ups)
+    {
+        $this->_form('edit', $ups);
+    }
+    function _form($form_type, $ups)
     {
         $this->lang->load('ups_server');
         $this->load->library('ups_server/nut');
@@ -19,8 +23,7 @@ class ups_conf_commands_view extends ClearOS_Controller
         if ($this->input->post('submit') && ($form_ok === TRUE)) {
 
             try {
-                //TEST REDIRECT
-                redirect('/ups_server/nut_conf/summary');
+                //ADD
             } catch (Exception $e) {
                 $this->page->view_exception($e);
                 return;
@@ -29,8 +32,9 @@ class ups_conf_commands_view extends ClearOS_Controller
         
         try {
             $data['form_type'] = $form_type;
-            $data['ups'] = $item;
-            $data['ups_commands_list'] = $this->nut->get_ups_commands_list($item);
+            $data['dir'] = 'ups_conf';
+            $data['ups'] = $ups;
+            $data['ups_commands_list'] = $this->nut->get_ups_commands_list($ups);
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;

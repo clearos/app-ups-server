@@ -29,8 +29,10 @@ clearos_load_library('base/File_No_Match_Exception');
 
 class Nut extends Daemon
 {
-    const FILE_NUT_CONF = 'default.nut.conf';
-    const FILE_UPS_CONF = 'default.ups.conf';
+    const FILE_DEFAULT_NUT_CONF = 'default.nut.conf';
+    const FILE_DEFAULT_UPS_CONF = 'default.ups.conf';
+    const FILE_CUSTOM_UPS_CONF = 'custom.ups.conf';
+    protected $clist = array();
 
     function __construct()
     {
@@ -44,7 +46,7 @@ class Nut extends Daemon
        clearos_profile(__METHOD__, __LINE__);
 
         try {
-            $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_NUT_CONF);
+            $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_DEFAULT_NUT_CONF);
             $retval = $file->lookup_value("/^".$query."=+/i");
             if ($qoutes) $retval = preg_replace("/\"/", "", $retval);
         } catch (File_No_Match_Exception $e) {
@@ -60,7 +62,7 @@ class Nut extends Daemon
         clearos_profile(__METHOD__, __LINE__);
 
         if ($qoutes) $param = '"'.$param.'"';
-        $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_NUT_CONF);
+        $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_DEFAULT_NUT_CONF);
         $match = $file->replace_lines("/^\s*".$query."/i", $query."=".$param."\n");
         if (! $match) {
             $match = $file->replace_lines("/^#".$query."/i",$query."=".$param."\n");
@@ -75,7 +77,7 @@ class Nut extends Daemon
        clearos_profile(__METHOD__, __LINE__);
 
         try {
-            $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_UPS_CONF);
+            $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_DEFAULT_UPS_CONF);
             $retval = $file->lookup_value("/^".$query."=+/i");
             if ($qoutes) $retval = preg_replace("/\"/", "", $retval);
         } catch (File_No_Match_Exception $e) {
@@ -91,7 +93,7 @@ class Nut extends Daemon
         clearos_profile(__METHOD__, __LINE__);
 
         if ($qoutes) $param = '"'.$param.'"';
-        $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_UPS_CONF);
+        $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_DEFAULT_UPS_CONF);
         $match = $file->replace_lines("/^\s*".$query."/i", $query."=".$param."\n");
         if (! $match) {
             $match = $file->replace_lines("/^#".$query."/i",$query."=".$param."\n");
@@ -110,7 +112,7 @@ class Nut extends Daemon
     function get_ups_list($item, $value)
     {
         //Find all upses
-        $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_UPS_CONF);
+        $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_DEFAULT_UPS_CONF);
         $data = $file->get_contents();
         $rows = explode("\n", $data);
         $i=0;
@@ -138,12 +140,69 @@ class Nut extends Daemon
 
     function get_ups_commands_list($ups, $item, $value)
     {
-        $ups_name = self::get_ups_list($ups, 'name');
+        // if clist not set...
+        if (empty($clist))
+        {
+            //Return supported UPS commands.
+            $supported = self::supported_ups_commands_list($ups);
+            //Return known UPS commands.
+            $commands = self::known_ups_commands_list();
+            //Begin: Add known commands to list.
+            $i=0;
+            foreach ($commands as $key)
+            {
+                if ($supported[3]) $supported[1][$key] = 'Offline';
+                self::build_ups_commands_list($i, $key, $ups, $supported[1][$key], 'known');
+                $i++;
+            }
+            //End
+            //Begin: Add unkown commands to list.
+            if (!$supported[3])
+            {
+                //FIX: Needing to use nested array to check array_diff
+                $diff = array_diff($supported[0], $commands);
+                foreach ($diff as $key)
+                {
+                    self::build_ups_commands_list($i, $key, $ups, $supported[1][$key], 'unknown');
+                    $i++;
+                }
+            }
+            //End
+            //Begin: Add custom commands to list.
+            $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_CUSTOM_UPS_CONF);
+            $data = $file->get_contents();
+            $commands = explode("\n", $data);
+            foreach ($commands as $key)
+            {
+                self::build_ups_commands_list($i, $key, $ups, 'Custom', 'custom');
+                $i++;
+            }
+            //End
+        }
+        //Begin: Return Results.
+        if (! $item) {
+            return $this->clist;
+        } else {
+            return $this->clist[$item][$value];
+        }
+        //End
+    }
+    
+    function build_ups_commands_list($i, $key, $ups, $supported, $edit)
+    {
+        $this->clist[$i]['command'] = $key;
+        $this->clist[$i]['default'] = self::get_ups_list($ups, 'default.'.$key);
+        $this->clist[$i]['override'] = self::get_ups_list($ups, 'override.'.$key);
+        $this->clist[$i]['supported'] = $supported;
+        $this->clist[$i]['edit'] = $edit;
+    }
+    function supported_ups_commands_list($ups)
+    {
         try {
             $shell = new Shell();
-            $output = $shell->execute('/usr/bin/upsc', $ups_name, false);
+            $output = $shell->execute('/usr/bin/upsc', self::get_ups_list($ups, 'name'), FALSE);
         } catch (Engine_Exception $e) {
-            //Throw no errors, Supported column will show failed connection.
+            //Throw no errors, Supported column will show 'Offline' for failed connection.
         }
         
         if ($output == 0)
@@ -152,16 +211,22 @@ class Nut extends Daemon
             foreach($rows as $key)
             {
                 $var = explode(":",$key);
-                $status[trim($var[0])] = trim($var[1]);
+                //FIX: Needing to use nested array to check array_diff
+                $commands[0][] = trim($var[0]);
+                $commands[1][trim($var[0])] = trim($var[1]);
             }
+            $commands[3] = TRUE;
+            return $commands;
         }
-
-        //Get default and override settings for UPS
-        
+        $commands[3] = FALSE;
+        return $commands;
+    }
+    function known_ups_commands_list()
+    {
         $commands = array
         (
             "",
-            "battery.charge",
+            //"battery.charge",
             "battery.charge.low",
             "battery.charge.warning",
             "battery.date",
@@ -173,7 +238,7 @@ class Nut extends Daemon
             "battery.voltage.nominal",
             "device.mfr",
             "device.model",
-            "devices.serial",
+            "device.serial",
             "device.type",
             "driver.name",
             "driver.parameter.pollfreq",
@@ -203,23 +268,45 @@ class Nut extends Daemon
             "ups.test.result",
             "ups.timer.reboot",
             "ups.timer.shutdown",
-            "ups.vendorid",
+            "ups.vendorid"
         );
-        $i=0;
-        foreach ($commands as $key)
-        {
-            if (!$status[$key]) $status[$key] = 'Offline';
-            $list[$i]['command'] = $commands[$i];
-            $list[$i]['default'] = self::get_ups_list($ups, 'default.'.$commands[$i]);
-            $list[$i]['override'] = self::get_ups_list($ups, 'override.'.$commands[$i]);;
-            $list[$i]['supported'] = $status[$key];
-            $i++;
-        }
+        return $commands;
+    }
+    
+    function update_ups_commands_list($ups, $command, $default, $override)
+    {
+        $file = new File(clearos_app_base('ups_server').'/packaging/'.self::FILE_DEFAULT_UPS_CONF);
+        $file_exit = new File(clearos_app_base('ups_server').'/packaging/exit.conf');
+        //match $command after [$ups] and before next [ or EOL
+        //if $default or $override = null remove line
+        //if match replace else add after.
+        $search = 'default.'.$command.'=';
+        $replacement = 'default.'.$command.'='.$default;
+        $start = "/^\[apc\]/";
+        $end = "/\[/";
+        $file_exit->add_lines($search."\n");
+        $file_exit->add_lines($replacement."\n");
+        $file_exit->add_lines($start."\n");
+        $file_exit->add_lines($end."\n");
+        $match = $file->replace_lines_between($search, $replacement, $start, $end);
+        if (! $match) {
+            //$match = $file->replace_lines("/^#".$search."/i",$replacement."\n");
 
-        if (! $item) {
-            return $list;
+            //if (! $match)
+                //$file->add_lines_after($replacement."\n", "/^[^#]/");
+        }
+    }
+    
+    function set_custom_commands_list($edit, $command)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $file = new File(clearos_app_base('ups_server'). "/packaging/custom.ups.conf");
+        if ($edit === 'add')
+        {
+            $file->add_lines_after("$command\n", "/^[^#]/");
         } else {
-            return $list[$item][$value];
+            $file->delete_lines("/".$command."$/");
         }
     }
     

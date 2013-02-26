@@ -1,10 +1,8 @@
 <?php
-//MERGE VIEWS COMMANDS_EDIT & COMMANDS_VIEW.
-
 //REMOVE AFTER TESTING
-echo form_open('ups_server/ups_conf_commnads_view/');
+echo form_open('ups_server/commnads_view/');
 echo form_header('TESTING, NOTES.');
-echo fieldset_header('TAG: UPS.CONF COMMANDS VIEW<br>TAG: CONTROLLER = UPS_CONF_COMMANDS_VIEW.PHP<br>TAG: VIEW = "/UPS_CONF/COMMANDS_VIEW.PHP"');
+echo fieldset_header('TAG: UPS.CONF COMMANDS VIEW<br>TAG: CONTROLLER = UPS_CONF/COMMANDS_VIEW.PHP<br>TAG: VIEW = "/UPS_CONF/COMMANDS_VIEW.PHP"');
 echo field_info('');
 echo form_footer();
 echo form_close();
@@ -17,18 +15,36 @@ $headers = array(
     lang('ups_server_supported'),
 );
 
-$anchors = array(anchor_add('/app/ups_server/ups_conf_commands_edit/add'),anchor_cancel('/app/ups_server/'));
+$anchors = array(anchor_add('/app/ups_server/'.$dir.'/commands_edit/add/'.$ups),anchor_cancel('/app/ups_server/'));
 
 foreach ($ups_commands_list as $id => $details) {
     if ($id != 0) 
     {
-        $detail_buttons = button_set(
-            array(
-                anchor_edit('/app/ups_server/ups_conf_commands_edit/edit/' . $id . '/' . $ups),
-                anchor_delete('/app/ups_server/ups_conf_commands_edit/delete/' . $id)
-            )
-        );
-
+        if ($details['edit'] === 'custom')
+        {
+            $detail_buttons = button_set(
+                array(
+                    anchor_edit('/app/ups_server/'.$dir.'/commands_edit/edit/'.$id.'/'.$ups),
+                    anchor_delete('/app/ups_server/'.$dir.'/commands_edit/delete/'.$details['command'].'/'.$ups)
+                )
+            );
+        } else {
+            if ($details['edit'] === 'unknown')
+            {
+                $detail_buttons = button_set(
+                    array(
+                        anchor_edit('/app/ups_server/'.$dir.'/commands_edit/edit/'.$id.'/'.$ups),
+                        anchor_custom('/app/ups_server/'.$dir.'/commands_view/report/', 'Report')
+                    )
+                );
+            } else {
+                $detail_buttons = button_set(
+                    array(
+                        anchor_edit('/app/ups_server/'.$dir.'/commands_edit/edit/'.$id.'/'.$ups)
+                    )
+                );
+            }
+        }
         $item['title'] = $details['name'];
         $item['action'] = '##' . $id;
         $item['anchors'] = $detail_buttons;
@@ -43,8 +59,7 @@ foreach ($ups_commands_list as $id => $details) {
 }
 
 echo summary_table(
-
-    lang('ups_server_command_list').' : '.$ups,
+    lang('ups_server_command_list'),
     $anchors,
     $headers,
     $items
