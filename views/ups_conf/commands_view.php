@@ -34,7 +34,7 @@ foreach ($ups_commands_list as $id => $details) {
                 $detail_buttons = button_set(
                     array(
                         anchor_edit('/app/ups_server/'.$dir.'/commands_edit/edit/'.$id.'/'.$ups),
-                        anchor_custom('/app/ups_server/'.$dir.'/commands_view/report/', 'Report')
+                        anchor_custom('/app/ups_server/'.$dir.'/commands_edit/report/'.$details['command'].'/'.$ups, 'Report')
                     )
                 );
             } else {
@@ -59,7 +59,7 @@ foreach ($ups_commands_list as $id => $details) {
 }
 
 echo summary_table(
-    lang('ups_server_command_list'),
+    lang('ups_server_variables'),
     $anchors,
     $headers,
     $items

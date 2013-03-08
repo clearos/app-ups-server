@@ -28,7 +28,7 @@ if ($form_type === 'edit') {
 }
 
 echo form_open($form);
-echo form_header(lang('base_settings'));
+echo form_header(lang('ups_server_variables'));
 
 if ($form_type === 'edit') {
     echo field_input('command', $command, 'COMMAND VALUE', TRUE);

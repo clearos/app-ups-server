@@ -109,7 +109,7 @@ class Nut extends Daemon
             return 'Invalid Parameter';
     }
 
-    function get_ups_list($item, $value)
+    function get_ups_list($ups, $value)
     {
         //Find all upses
         $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_DEFAULT_UPS_CONF);
@@ -122,16 +122,17 @@ class Nut extends Daemon
             {
                 $i++;
                 $list[$i]['name'] = str_replace(array('[',']'),'',$line);
+                if ($list[$i]['name'] === $ups) $item = $i;
             }
             if (!$i == 0)
             {
-                //Explode on first occurence
+                //Explode on first occurence only.
                 $var = explode("=", $line, 2);
                 $list[$i][trim($var[0])] = preg_replace("/\"/", "", trim($var[1]));
             }
         }
 
-        if (! $item) {
+        if (!$ups) {
             return $list;
         } else {
             return $list[$item][$value];
@@ -151,13 +152,13 @@ class Nut extends Daemon
             $i=0;
             foreach ($commands as $key)
             {
-                if ($supported[3]) $supported[1][$key] = 'Offline';
+                if (!$supported[3]) $supported[1][$key] = 'Offline';
                 self::build_ups_commands_list($i, $key, $ups, $supported[1][$key], 'known');
                 $i++;
             }
             //End
             //Begin: Add unkown commands to list.
-            if (!$supported[3])
+            if ($supported[3])
             {
                 //FIX: Needing to use nested array to check array_diff
                 $diff = array_diff($supported[0], $commands);
@@ -180,7 +181,7 @@ class Nut extends Daemon
             //End
         }
         //Begin: Return Results.
-        if (! $item) {
+        if (!$item) {
             return $this->clist;
         } else {
             return $this->clist[$item][$value];
@@ -190,6 +191,7 @@ class Nut extends Daemon
     
     function build_ups_commands_list($i, $key, $ups, $supported, $edit)
     {
+        //FIX: Remove need for $i. Splice/Merge arrays together?
         $this->clist[$i]['command'] = $key;
         $this->clist[$i]['default'] = self::get_ups_list($ups, 'default.'.$key);
         $this->clist[$i]['override'] = self::get_ups_list($ups, 'override.'.$key);
@@ -200,12 +202,14 @@ class Nut extends Daemon
     {
         try {
             $shell = new Shell();
-            $output = $shell->execute('/usr/bin/upsc', self::get_ups_list($ups, 'name'), FALSE);
+            $output = $shell->execute('/usr/bin/upsc', $ups, FALSE);
+            $output = TRUE;
         } catch (Engine_Exception $e) {
+            $output = FALSE;
             //Throw no errors, Supported column will show 'Offline' for failed connection.
         }
         
-        if ($output == 0)
+        if ($output)
         {
             $rows = $shell->get_output();
             foreach($rows as $key)
@@ -272,31 +276,118 @@ class Nut extends Daemon
         );
         return $commands;
     }
-    
-    function update_ups_commands_list($ups, $command, $default, $override)
-    {
-        $file = new File(clearos_app_base('ups_server').'/packaging/'.self::FILE_DEFAULT_UPS_CONF);
-        $file_exit = new File(clearos_app_base('ups_server').'/packaging/exit.conf');
-        //match $command after [$ups] and before next [ or EOL
-        //if $default or $override = null remove line
-        //if match replace else add after.
-        $search = 'default.'.$command.'=';
-        $replacement = 'default.'.$command.'='.$default;
-        $start = "/^\[apc\]/";
-        $end = "/\[/";
-        $file_exit->add_lines($search."\n");
-        $file_exit->add_lines($replacement."\n");
-        $file_exit->add_lines($start."\n");
-        $file_exit->add_lines($end."\n");
-        $match = $file->replace_lines_between($search, $replacement, $start, $end);
-        if (! $match) {
-            //$match = $file->replace_lines("/^#".$search."/i",$replacement."\n");
 
-            //if (! $match)
-                //$file->add_lines_after($replacement."\n", "/^[^#]/");
+    function update_ups_commands_list($ups, $command)
+    {
+        //FIX: This got crazy, upgrade with search_array.
+        $file = new File(clearos_app_base('ups_server').'/packaging/'.self::FILE_DEFAULT_UPS_CONF);
+        $lines = $file->get_contents_as_array();
+        $start = '/\['.$ups.'\]/';
+        $end = '/^\[/';
+        $conf = array();
+        $conf['basic'] = array();
+        $i['count']=0;
+        foreach ($lines as $line)
+        {
+            if (preg_match($start, $line)) {
+                $found['start'] = TRUE;
+                $found['ups'] = TRUE;
+                $conf['basic'][] = $line;
+                //FIX: use array count
+                $found['splice_start'] = $i['count'];
+                continue;
+            }
+            if ($found['start'])
+            {
+                if (preg_match('/default\./', $line)) {
+                    if (preg_match('/default\.'.$command['command'].'\s*=/', $line)) {
+                        $found['default'] = TRUE;
+                        if (!empty($command['default'])) $conf['default'][] = 'default.'.$command['command'].'='.$command['default'];
+                    } else {
+                        $conf['default'][] = $line;
+                    }
+                    continue;
+                } elseif (preg_match('/override\./', $line)) {
+                    if (preg_match('/override\.'.$command['command'].'\s*=/', $line)) {
+                        $found['override'] = TRUE;
+                        if (!empty($command['override'])) $conf['override'][] = 'override.'.$command['command'].'='.$command['override'];
+                    } else {
+                        $conf['override'][] = $line;
+                    }
+                    continue;
+                } elseif (preg_match('/driver\s*=/', $line)) {
+                    $found['driver'] = TRUE;
+                    if (!empty($command['driver'])) $conf['basic'][] = 'driver='.$command['driver'];
+                    continue;
+                } elseif (preg_match('/port\s*=/', $line)) {
+                    $found['port'] = TRUE;
+                    if (!empty($command['port'])) $conf['basic'][] = 'port='.$command['port'];
+                    continue;
+                } elseif (preg_match('/sdorder\s*=/', $line)) {
+                    $found['sdorder'] = TRUE;
+                    if (!empty($command['sdorder'])) $conf['basic'][] = 'sdorder='.$command['sdorder'];
+                    continue;
+                } elseif (preg_match('/desc\s*=/', $line)) {
+                    $found['desc'] = TRUE;
+                    if (!empty($command['desc'])) $conf['basic'][] = 'desc="'.$command['desc'].'"';
+                    continue;
+                } elseif (preg_match('/nolock\s*=/', $line)) {
+                    $found['nolock'] = TRUE;
+                    if (!empty($command['nolock'])) $conf['basic'][] = 'nolock='.$command['nolock'];
+                    continue;
+                } elseif (preg_match('/ignorelb\s*=/', $line)) {
+                    $found['ignorelb'] = TRUE;
+                    if (!empty($command['ignorelb'])) $conf['basic'][] = 'ignorelb='.$command['ignorelb'];
+                    continue;
+                } elseif (preg_match('/maxstartdelay\s*=/', $line)) {
+                    $found['maxstartdelay'] = TRUE;
+                    if (!empty($command['maxstartdelay']) && $command['maxstartdelay'] != 45) $conf['basic'][] = 'maxstartdelay='.$command['maxstartdelay'];
+                    continue;
+                } elseif (preg_match($end, $line)) {
+                    $found['start'] = FALSE;
+                }
+            }
+            if (!empty($line)) {
+                $conf['output'][] = $line;
+                $i['count']++;
+            }
         }
+        //Add UPS if not found
+        if (!$found['ups']) {
+            $conf['output'][] = '['.$command['name'].']';
+            $conf['output'][] = 'desc='.$command['desc'];
+            //$found['splice_start'] = $i['count'];
+        }
+        //Add default variable if not found.
+        if (!$found['default'] && !empty($command['default'])) $conf['default'][] = 'default.'.$command['command'].'='.$command['default'];
+        //Add override variable if not found.
+        if (!$found['override'] && !empty($command['override'])) $conf['override'][] = 'override.'.$command['command'].'='.$command['override'];
+        //Add driver variable if not found
+        if (!$found['driver'] && !empty($command['driver'])) $conf['basic'][] = 'driver='.$command['driver'];
+        //Add port variable if not found
+        if (!$found['port'] && !empty($command['port'])) $conf['basic'][] = 'port='.$command['port'];
+        //Add sdorder variable if not found
+        if (!$found['sdorder'] && !empty($command['sdorder'])) $conf['basic'][] = 'sdorder='.$command['sdorder'];
+        //Add desciption variable if not found
+        if (!$found['desc'] && !empty($command['desc'])) $conf['basic'][] = 'desc="'.$command['desc'].'"';
+        //Add nolock variable if not found
+        if (!$found['nolock'] && !empty($command['nolock'])) $conf['basic'][] = 'nolock='.$command['nolock'];
+        //Add ignorelb variable if not found
+        if (!$found['ignorelb'] && !empty($command['ignorelb'])) $conf['basic'][] = 'ignorelb='.$command['ignorelb'];
+        //Add maxstartdelay variable if not found
+        if (!$found['maxstartdelay'] && !empty($command['maxstartdelay']) && $command['maxstartdelay'] != 45) $conf['basic'][] = 'maxstartdelay='.$command['maxstartdelay'];
+        //Sort and merge arrays
+        sort($conf['basic']);
+        sort($conf['default']);
+        sort($conf['override']);
+        //Delete UPS
+        if ($command['command'] != 'delete') {
+            $output = array_merge($conf['default'], $conf['override']);
+            $output = array_merge($conf['basic'], $output);
+        }
+        array_splice($conf['output'], $found['splice_start'], 0, $output);
+        $file->dump_contents_from_array($conf['output']);
     }
-    
     function set_custom_commands_list($edit, $command)
     {
         clearos_profile(__METHOD__, __LINE__);
@@ -307,6 +398,10 @@ class Nut extends Daemon
             $file->add_lines_after("$command\n", "/^[^#]/");
         } else {
             $file->delete_lines("/".$command."$/");
+            //Note: Delete default and override commands from ups_conf also?
+            //$command['default'] = $command;
+            //$command['override'] = $command;
+            //$this->update_ups_commands_list('\w', $command);
         }
     }
     

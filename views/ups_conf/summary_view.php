@@ -19,9 +19,9 @@ foreach ($ups_conf_list as $id => $details) {
 
     $detail_buttons = button_set(
         array(
-            anchor_custom('/app/ups_server/'.$dir.'/commands_view/edit/' . $id, lang('base_configure')),
-            anchor_edit('/app/ups_server/'.$dir.'/summary_edit/edit/' . $id),
-            anchor_delete('/app/ups_server/'.$dir.'/summary_edit/delete/' . $id)
+            anchor_custom('/app/ups_server/'.$dir.'/commands_view/edit/' . $details['name'], lang('base_configure')),
+            anchor_edit('/app/ups_server/'.$dir.'/summary_edit/edit/' . $details['name']),
+            anchor_delete('/app/ups_server/'.$dir.'/summary_edit/delete/' . $details['name'])
         )
     );
 

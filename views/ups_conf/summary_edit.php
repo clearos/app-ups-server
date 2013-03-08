@@ -10,7 +10,7 @@ echo form_close();
 
 $this->lang->load('base');
 $this->lang->load('ups_server');
-
+if (!$maxstartdelay) $maxstartdelay = 45;
 for ($score = 5; $score <= 60; $score+= 5) {
     switch ((int)$score) {
         case 45:
@@ -23,20 +23,21 @@ for ($score = 5; $score <= 60; $score+= 5) {
 
 if ($form_type === 'edit') {
     $read_only = FALSE;
+    $form = 'ups_server/'.$dir.'/summary_edit/edit/'.$ups;
     $buttons = array (
         form_submit_update('submit'),
         anchor_cancel('/app/ups_server')
     );
 } else {
     $read_only = FALSE;
-    $maxstartdelay = 45;
+    $form = 'ups_server/'.$dir.'/summary_edit/add';
     $buttons = array(
-        anchor_add(''),
+        form_submit_add('submit'),
         anchor_cancel('/app/ups_server')
     );
 }
 
-echo form_open('ups_server/summary_edit/');
+echo form_open($form);
 echo form_header(lang('base_settings'));
 echo field_input('name', $name, 'NAME', $read_only);
 echo field_input('driver', $driver, 'DRIVER', $read_only);

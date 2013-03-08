@@ -39,6 +39,7 @@ class commands_view extends ClearOS_Controller
             $this->page->view_exception($e);
             return;
         }
-        $this->page->view_form('ups_server/ups_conf/commands_view', $data, lang('ups_server_ups_list'));
+        $options['type'] = 'report';
+        $this->page->view_form('ups_server/ups_conf/commands_view', $data, lang('ups_server_ups_list'), $options);
     }
 }

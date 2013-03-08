@@ -20,3 +20,4 @@ $lang['ups_server_ups_list'] = 'UPS List';
 $lang['ups_server_ups_name'] = 'UPS Name';
 $lang['ups_server_user_list'] = 'User List';
 $lang['ups_server_user_name'] = 'User Name';
+$lang['ups_server_variables'] = 'Variables';

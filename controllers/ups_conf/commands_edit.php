@@ -1,4 +1,4 @@
-p<?php
+<?php
 use \Exception as Exception;
 
 class commands_edit extends ClearOS_Controller
@@ -41,6 +41,10 @@ class commands_edit extends ClearOS_Controller
             return;
         }
     }
+    function report($command = NULL, $ups)
+    {
+        
+    }
     function _form($form_type, $item, $ups)
     {
         $this->lang->load('ups_server');
@@ -55,7 +59,17 @@ class commands_edit extends ClearOS_Controller
                 if ($form_type === 'edit')
                 {
                     $ups_name = $this->nut->get_ups_list($ups, 'name');
-                    $this->nut->update_ups_commands_list($ups_name, $this->input->post('command'), $this->input->post('default'), $this->input->post('override'));
+                    $command['driver'] = $this->nut->get_ups_list($ups, 'driver');
+                    $command['port'] = $this->nut->get_ups_list($ups, 'port');
+                    $command['sdorder'] = $this->nut->get_ups_list($ups, 'sdorder');
+                    $command['desc'] = $this->nut->get_ups_list($ups, 'desc');
+                    $command['nolock'] = $this->nut->get_ups_list($ups, 'nolock');
+                    $command['ignorelb'] = $this->nut->get_ups_list($ups, 'ignorelb');
+                    $command['maxstartdelay'] = $this->nut->get_ups_list($ups, 'maxstartdelay');
+                    $command['command'] = $this->input->post('command');
+                    $command['default'] = $this->input->post('default');
+                    $command['override'] = $this->input->post('override');
+                    $this->nut->update_ups_commands_list($ups_name, $command);
                     $this->page->set_status_updated();
                     redirect('/ups_server/ups_conf/commands_view/view/'.$ups);
                 } elseif ($form_type === 'add_custom') {
