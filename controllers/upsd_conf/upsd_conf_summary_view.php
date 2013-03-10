@@ -19,8 +19,7 @@ class upsd_conf_summary_view extends ClearOS_Controller
         if ($this->input->post('submit') && ($form_ok === TRUE)) {
 
             try {
-                //$this->page->set_status_updated();
-                redirect('/ups_server/nut_conf/summary');
+                
             } catch (Exception $e) {
                 $this->page->view_exception($e);
                 return;
@@ -29,7 +28,8 @@ class upsd_conf_summary_view extends ClearOS_Controller
         
         try {
             $data['form_type'] = $form_type;
-            $data['upsd_conf_interfaces'] = $this->nut->get_upsd_interfaces();
+            $data['dir'] = 'upsd_conf';
+            $data['interfaces'] = $this->nut->get_upsd_interfaces();
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;

@@ -13,33 +13,35 @@ $this->lang->load('ups_server');
 for ($score = 5; $score <= 60; $score+= 5) {
     switch ((int)$score) {
         case 15:
-            $upsd_conf_maxage_options[$score] = $score . ' - ' . lang('ups_server_default');
+            $maxage_options[$score] = $score . ' - ' . lang('ups_server_default');
             break;
         default:
-            $upsd_conf_maxage_options[$score] = $score;
+            $maxage_options[$score] = $score;
     }
 }
 
 if ($form_type === 'edit') {
     $read_only = FALSE;
+    $form = 'ups_server/'.$dir.'/upsd_conf_settings/edit';
     $buttons = array (
         form_submit_update('submit'),
-        anchor_cancel('/app/ups_server/upsd_conf_settings')
+        anchor_cancel('/app/ups_server/'.$dir.'/upsd_conf_settings')
     );
 } else {
     $read_only = TRUE;
+    $form = 'ups_server/'.$dir.'/upsd_conf_settings/edit';
     $buttons = array(
-        anchor_edit('/app/ups_server/upsd_conf_settings/edit'),
+        anchor_edit('/app/ups_server/'.$dir.'/upsd_conf_settings/edit'),
         anchor_cancel('/app/ups_server')
     );
 }
 
-echo form_open('ups_server/upsd_conf_settings/edit');
+echo form_open($form);
 echo form_header(lang('base_settings'));
-echo field_dropdown('upsd_conf_maxage', $upsd_conf_maxage_options, $upsd_conf_maxage, 'MAXAGE', $read_only);
-echo field_input('upsd_conf_statepath', $upsd_conf_statepath, 'STATE PATH', $read_only);
-echo field_input('upsd_conf_maxconn', $upsd_conf_maxconn, 'MAX CONNECTIONS', $read_only);
-echo field_input('upsd_conf_certfile', $upsd_conf_certfile, 'CERTIFICATE FILE', $read_only);
+echo field_dropdown('maxage', $maxage_options, $maxage, 'MAXAGE', $read_only);
+echo field_input('statepath', $statepath, 'STATE PATH', $read_only);
+echo field_input('maxconn', $maxconn, 'MAX CONNECTIONS', $read_only);
+echo field_input('certfile', $certfile, 'CERTIFICATE FILE', $read_only);
 
 echo field_button_set($buttons);
 

@@ -32,6 +32,7 @@ class Nut extends Daemon
     const FILE_DEFAULT_NUT_CONF = 'default.nut.conf';
     const FILE_DEFAULT_UPS_CONF = 'default.ups.conf';
     const FILE_CUSTOM_UPS_CONF = 'custom.ups.conf';
+    const FILE_DEFAULT_UPSD_CONF = 'default.upsd.conf';
     protected $clist = array();
 
     function __construct()
@@ -103,6 +104,35 @@ class Nut extends Daemon
         }
     }
 
+    function get_upsd_conf($query, $qoutes)
+    {
+       clearos_profile(__METHOD__, __LINE__);
+
+        try {
+            $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_DEFAULT_UPSD_CONF);
+            $retval = $file->lookup_value("/^".$query."=+/i");
+            if ($qoutes) $retval = preg_replace("/\"/", "", $retval);
+        } catch (File_No_Match_Exception $e) {
+            return '';
+        } catch (Exception $e) {
+            throw new Engine_Exception(clearos_exception_message($e), CLEAROS_ERROR);
+        }
+        return $retval;
+    }
+    function set_upsd_conf($param, $query, $qoutes)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        if ($qoutes) $param = '"'.$param.'"';
+        $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_DEFAULT_UPSD_CONF);
+        $match = $file->replace_lines("/^\s*".$query."/i", $query."=".$param."\n");
+        if (! $match) {
+            $match = $file->replace_lines("/^#".$query."/i",$query."=".$param."\n");
+
+            if (! $match)
+                $file->add_lines_after($query."=".$param."\n", "/^[^#]/");
+        }
+    }
     function validate_param($param)
     {
         if (!preg_match("/^[A-Za-z0-9\.\-_]+$/", $param))
@@ -405,23 +435,52 @@ class Nut extends Daemon
         }
     }
     
-    function get_upsd_interfaces($item, $value)
+    function get_upsd_interfaces($interface, $key)
     {
-        $list[1]['validate'] = 'ipv4';
-        $list[1]['ip'] = '192.168.100.100';
-        $list[1]['port'] = '3876';
-        $list[2]['validate'] = 'ipv4';
-        $list[2]['ip'] = '192.168.100.171';
-        $list[2]['port'] = '3876';
-        $list[3]['validate'] = 'ipv6';
-        $list[3]['ip'] = '::1';
-        $list[3]['port'] = '3876';
-        
-        if (! $item) {
-            return $list;
-        } else {
-            return $list[$item][$value];
+        //Find all interfaces
+        $file = new File(clearos_app_base('ups_server'). "/packaging/" . self::FILE_DEFAULT_UPSD_CONF);
+        $data = $file->get_contents();
+        $rows = explode("\n", $data);
+        $list[] = array();
+        foreach ($rows as $line)
+        {
+            if (preg_match( "/^\s*\#*LISTEN/", $line ))
+            {
+                $var = explode(" ", $line);
+                $enabled = (preg_match('/^#/', $var[0])) ? FALSE : TRUE;
+                $list[] = array('enabled' => $enabled,
+                    'ip_old' => $var[1],
+                    'ip' => $var[1],
+                    'port' => $var[2],
+                    'ip_validate' => 'ipv4'
+                );
+            }
         }
+
+        if (!$interface && !$key) {
+            //Return all interfaces
+            return $list;
+        } elseif ($interface && !$key) {
+            //Return 1 interface
+            return $list[$interface];
+        } elseif ($interface && $key) {
+            //Return 1 interface value
+            return $list[$interface][$key];
+        }
+    }
+    function set_upsd_interfaces($query)
+    {
+        $enabled = ($query['enabled']) ? '#' : '';
+        $file = new File(clearos_app_base('ups_server').'/packaging/'.self::FILE_DEFAULT_UPSD_CONF);
+        $match = $file->replace_lines("/^\s*\#*LISTEN\s".$query['ip_old']."/i", $enabled.'LISTEN '.$query['ip'].' '.$query['port']."\n");
+        if (!$match) {
+            $file->add_lines_after('LISTEN '.$query['ip'].' '.$query['port']."\n", "/^[^#]/");
+        }
+    }
+    function delete_upsd_interfaces($query)
+    {
+        $file = new File(clearos_app_base('ups_server').'/packaging/'.self::FILE_DEFAULT_UPSD_CONF);
+        $file->delete_lines('/^\s*\#*LISTEN\s'.$query.'/');
     }
 
     function get_users_list($item, $value)
@@ -437,7 +496,7 @@ class Nut extends Daemon
         $list[2]['actions_set'] = '0';
         $list[2]['actions_fsd'] = '0';
         
-        if (! $item) {
+        if (!$item) {
             return $list;
         } else {
             return $list[$item][$value];

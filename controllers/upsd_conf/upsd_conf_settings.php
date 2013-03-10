@@ -15,12 +15,16 @@ class upsd_conf_settings extends ClearOS_Controller
     {
         $this->lang->load('ups_server');
         $this->load->library('ups_server/nut');
-
+        $form_ok = TRUE;
         if ($this->input->post('submit') && ($form_ok === TRUE)) {
 
             try {
-
-                redirect('/ups_server/nut_conf/summary');
+                $this->nut->set_upsd_conf($this->input->post('maxage'), 'maxage', FALSE);
+                $this->nut->set_upsd_conf($this->input->post('statepath'), 'statepath', TRUE);
+                $this->nut->set_upsd_conf($this->input->post('maxconn'), 'maxconn', FALSE);
+                $this->nut->set_upsd_conf($this->input->post('certfile'), 'certfile', FALSE);
+                $this->page->set_status_updated();
+                redirect('/ups_server/upsd_conf/upsd_conf_settings');
             } catch (Exception $e) {
                 $this->page->view_exception($e);
                 return;
@@ -29,10 +33,11 @@ class upsd_conf_settings extends ClearOS_Controller
         
         try {
             $data['form_type'] = $form_type;
-            $data['upsd_conf_maxage'] = '5';
-            $data['upsd_conf_statepath'] = 'statepath';
-            $data['upsd_conf_maxconn'] = 'maxconnections';
-            $data['upsd_conf_certfile'] = 'certfile';
+            $data['dir'] = 'upsd_conf';
+            $data['maxage'] = $this->nut->get_upsd_conf('maxage', TRUE);
+            $data['statepath'] = $this->nut->get_upsd_conf('statepath', TRUE);
+            $data['maxconn'] = $this->nut->get_upsd_conf('maxconn', TRUE);
+            $data['certfile'] = $this->nut->get_upsd_conf('certfile', TRUE);
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;
