@@ -2,9 +2,9 @@
 /**
  * UPS Server controller.
  *
- * @category   Apps
- * @package    UPS_Server
- * @subpackage Controllers
+ * @category   apps
+ * @package    ups-server
+ * @subpackage controllers
  * @author     UWS <UWS@Shaw.ca>
  * @copyright  2011 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
@@ -31,9 +31,9 @@
 /**
  * UPS Server controller.
  *
- * @category   Apps
- * @package    UPS_Server
- * @subpackage Controllers
+ * @category   apps
+ * @package    ups-server
+ * @subpackage controllers
  * @author     UWS <UWS@Shaw.ca>
  * @copyright  2011 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
