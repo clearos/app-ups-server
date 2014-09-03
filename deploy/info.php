@@ -1,6 +1,6 @@
 <?php
 $app['basename'] = 'ups_server';
-$app['version'] = '1.0.0';
+$app['version'] = '1.6.5';
 $app['release'] = '1';
 $app['vendor'] = 'UWS';
 $app['packager'] = 'UWS';
