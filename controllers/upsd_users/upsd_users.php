@@ -85,6 +85,6 @@ class upsd_users extends ClearOS_Controller
             return;
         }
 
-        $this->page->view_form('ups_server/upsd_users/users', $data, lang('blah blah'));
+        $this->page->view_form('ups_server/upsd_users/users', $data, 'Users');
     }
 }
